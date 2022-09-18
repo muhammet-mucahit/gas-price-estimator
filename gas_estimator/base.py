@@ -3,9 +3,9 @@ from typing import Any, List, Optional
 
 """ 
 MODES:
-    Values of percentiles retrieved from a block.
-    Example: [25, 50, 75] = retrieves the 3 transactions at 25%, 50%, 75%
-    percentiles of the block (transactions are in ascending order, weighted by gas used).
+Values of percentiles retrieved from a block.
+Example: [25, 50, 75] = retrieves the 3 transactions at 25%, 50%, 75%
+percentiles of the block (transactions are in ascending order, weighted by gas used).
 """
 MODES = {
     "slow": [10, 20, 30, 40, 50],
@@ -25,7 +25,7 @@ class BaseGasFeeEstimator:
             raise Exception("The mode is incorrect!")
 
         percentiles = MODES[mode]
-        return cls._get_estimated_gas_fee(percentiles)
+        return cls._get_estimated_gas_fee_by_percentiles(percentiles)
 
     @classmethod
     def _get_estimated_gas_fee_by_percentiles(
@@ -37,6 +37,16 @@ class BaseGasFeeEstimator:
 
     @classmethod
     def get_estimated_gas_fees_by_mode(cls) -> dict:
+        """
+        Loop through modes and generates something like:
+        {
+            "prices": {
+                "slow": 1,
+                "normal": 2,
+                "fast": 3,
+            }
+        }
+        """
         return {
             "prices": {mode: cls.__estimate(mode=mode) for mode in MODES.keys()}
         }
